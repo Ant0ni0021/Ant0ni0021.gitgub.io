@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyecto 5 Semáforos</title>
+  <style>
+    :root{
+      --bg:#0b1220;         /* fondo profundo */
+      --panel:#0f1a2f;      /* tarjetas */
+      --muted:#94a3b8;      /* texto secundario */
+      --primary:#22d3ee;    /* cian */
+      --accent:#7c3aed;     /* violeta */
+      --success:#10b981;    /* verde */
+      --warning:#f59e0b;    /* amarillo */
+      --danger:#ef4444;     /* rojo */
+      --radius:18px;
+      --shadow:0 20px 60px rgba(2,8,23,.35);
+    }
+
+    /* ---- Base ---- */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Helvetica Neue", sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(124,58,237,.25), transparent 60%),
+                  radial-gradient(1000px 600px at 110% 0%, rgba(34,211,238,.18), transparent 55%),
+                  var(--bg);
+      color:#e5e7eb; line-height:1.6;
+    }
+    a{color:inherit; text-decoration:none}
+
+    /* ---- Header ---- */
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(90deg, rgba(15,23,42,.8), rgba(15,23,42,.6));
+      border-bottom:1px solid rgba(148,163,184,.15);
+    }
+    .bar{max-width:1200px; margin:0 auto; padding:16px 20px; display:flex; align-items:center; gap:16px;}
+    .brand{display:flex; align-items:center; gap:12px; font-weight:800; font-size:clamp(22px,3vw,36px)}
+    .brand .grad{background:linear-gradient(90deg,var(--primary),var(--accent)); -webkit-background-clip:text; background-clip:text; color:transparent}
+    .sub{font-size:12px; color:var(--muted)}
+    .spacer{flex:1}
+    .btn{appearance:none; border:0; padding:10px 14px; border-radius:12px; font-weight:700; cursor:pointer; box-shadow: var(--shadow);}
+    .btn.secondary{background:#111827; color:#cbd5e1; border:1px solid rgba(148,163,184,.2)}
+    .btn.primary{background:linear-gradient(90deg,var(--primary),#06b6d4); color:#0b1220}
+
+    /* ---- Layout ---- */
+    .container{max-width:1200px; margin:32px auto; padding:0 20px; display:grid; gap:28px}
+
+    .grid-hero{display:grid; grid-template-columns: 1.2fr .8fr; gap:28px}
+    @media (max-width: 900px){ .grid-hero{grid-template-columns:1fr} }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid rgba(148,163,184,.12);
+      border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow);
+    }
+    .chip{display:inline-block; padding:6px 12px; border-radius:999px; font-size:12px; font-weight:800; letter-spacing:.4px;
+      background: #0ea5e9; color:#051120; box-shadow: inset 0 -2px 0 rgba(0,0,0,.15);}
+    .h2{font-size: clamp(22px, 3vw, 34px); margin:10px 0 12px; font-weight:900}
+    .muted{color:var(--muted)}
+
+    /* ---- Traffic light art ---- */
+    .tl-wrap{display:flex; align-items:center; justify-content:center}
+    .tl{
+      background: linear-gradient(180deg, #0b1220 0%, #0f172a 100%);
+      border-radius: 24px; padding:18px; width:240px; aspect-ratio: 3/7; position:relative;
+      box-shadow: inset 0 0 30px rgba(0,0,0,.6), 0 10px 30px rgba(0,0,0,.35);
+    }
+    .lamp{width: 140px; height:140px; border-radius: 50%; margin:8px auto; position:relative;
+      background: radial-gradient(circle at 35% 25%, rgba(255,255,255,.12), transparent 30%), #111827;
+      box-shadow: inset 0 -8px 40px rgba(0,0,0,.8);
+    }
+    .glow{position:absolute; inset:0; border-radius:50%; filter: blur(20px); opacity:.9}
+    .lamp.red .glow{background: radial-gradient(circle, rgba(239,68,68,.9), transparent 55%)}
+    .lamp.yellow .glow{background: radial-gradient(circle, rgba(245,158,11,.9), transparent 55%)}
+    .lamp.green .glow{background: radial-gradient(circle, rgba(16,185,129,.9), transparent 55%)}
+
+    /* ---- Tables ---- */
+    table{width:100%; border-collapse: collapse; overflow:hidden; border-radius:14px;}
+    thead th{background:#0b1324; color:#c7d2fe; text-align:left; font-size:14px; letter-spacing:.4px}
+    th,td{padding:12px 14px; border-bottom:1px solid rgba(148,163,184,.12)}
+    tbody tr:hover{background:rgba(255,255,255,.03)}
+
+    /* ---- Code block ---- */
+    pre{margin:0}
+    .code{position:relative;}
+    .code pre{max-height: 500px; overflow:auto; background:#0a0f1b; color:#c7ffcf; padding:18px; border-radius:12px; border:1px solid rgba(148,163,184,.2);
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02)}
+    .copy{position:absolute; top:10px; right:10px; font-size:12px; padding:6px 10px; border-radius:10px; border:1px solid rgba(148,163,184,.25); background:#0f172a; color:#cbd5e1; cursor:pointer}
+
+    /* ---- Gallery ---- */
+    .gallery{display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:14px}
+    .gallery img{width:100%; height:160px; object-fit:cover; border-radius:14px; border:1px solid rgba(148,163,184,.2)}
+
+    /* ---- Footer ---- */
+    footer{margin:40px auto 60px; max-width:1200px; padding:0 20px; color:#9ca3af; text-align:center}
+
+    /* ---- Helpers ---- */
+    .two-col{display:grid; grid-template-columns: 1fr 1fr; gap:18px}
+    @media (max-width:800px){.two-col{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="bar">
+      <div>
+        <div class="brand">
+          <span style="display:inline-flex;align-items:center;gap:8px">
+            <span style="width:28px;height:28px;display:inline-grid;place-items:center;border-radius:8px;background:#0b1324;border:1px solid rgba(148,163,184,.2)">🚦</span>
+            <span class="grad">Proyecto 5 Semáforos</span>
+          </span>
+        </div>
+        <div class="sub">Arduino Mega 2560 • LEDs • Breadboard • Programación de tiempos</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn secondary" onclick="document.getElementById('final').scrollIntoView({behavior:'smooth'})">Ir al final</button>
+      <button class="btn primary" onclick="window.print()">Imprimir</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO: Descripción + Ilustración -->
+    <section class="grid-hero">
+      <article class="card">
+        <span class="chip">PROYECTO DE 5 SEMÁFOROS</span>
+        <h2 class="h2">Descripción</h2>
+        <p>
+          Llevamos un proyecto a cabo sobre la realización de <b>5 semáforos</b> desde 0, con <b>LEDs</b>, cables jumpers, <b>Arduino Mega</b> y una <b>breadboard</b>.
+          Esto con la finalidad de programar los <i>tiempos correctos</i> para encender cada color del semáforo en el momento indicado, saber también el <b>orden</b> y
+          las <b>conexiones</b> de cableado y practicar conceptos de electrónica digital.
+        </p>
+      </article>
+      <aside class="card tl-wrap" aria-label="Ilustración de semáforo">
+        <div class="tl">
+          <div class="lamp red"><span class="glow"></span></div>
+          <div class="lamp yellow"><span class="glow"></span></div>
+          <div class="lamp green"><span class="glow"></span></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- MATERIALES -->
+    <section class="card">
+      <span class="chip">Materiales</span>
+      <div class="two-col" style="margin-top:10px">
+        <ul>
+          <li>1 × Arduino Mega 2560 (o compatible)</li>
+          <li>1 × Breadboard grande</li>
+          <li>15 × LEDs (5 rojos, 5 amarillos, 5 verdes)</li>
+          <li>15 × Resistencias 220 Ω (o 330 Ω)</li>
+          <li>Muchos jumpers macho‑macho</li>
+          <li>Cable USB para programar</li>
+          <li>Fuente 5 V (la del USB basta para pruebas)</li>
+        </ul>
+        <ul>
+          <li><b>GND común</b> a todas las líneas negativas de la breadboard.</li>
+          <li><b>Ánodo del LED → resistencia → pin digital.</b></li>
+          <li><b>Cátodo del LED → GND.</b></li>
+          <li>Usamos <b>15 pines digitales</b> del Mega, uno por LED.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- MAPEO DE PINES -->
+    <section class="card">
+      <span class="chip">Mapeo de pines (Arduino → LED)</span>
+      <div style="margin-top:10px">
+        <table>
+          <thead>
+            <tr><th>Semáforo</th><th>Rojo</th><th>Amarillo</th><th>Verde</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><b>S1</b></td><td>13</td><td>12</td><td>11</td></tr>
+            <tr><td><b>S2</b></td><td>10</td><td>9</td><td>8</td></tr>
+            <tr><td><b>S3</b></td><td>5</td><td>6</td><td>7</td></tr>
+            <tr><td><b>S4</b></td><td>2</td><td>3</td><td>4</td></tr>
+            <tr><td><b>S5</b></td><td>10</td><td>9</td><td>8</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- REALIZACIÓN PASO A PASO -->
+    <section class="card">
+      <span class="chip">Realización paso a paso</span>
+      <ol style="margin-top:12px">
+        <li>Conecta el <b>GND</b> del Arduino a la línea negativa de la breadboard.</li>
+        <li>Coloca los <b>15 LEDs</b>: en cada semáforo agrupa <b>R‑A‑V</b> (ánodo a la derecha es práctico).</li>
+        <li>Del <b>ánodo</b> de cada LED, pon una <b>resistencia 220 Ω</b> hacia una fila libre.</li>
+        <li>De esa fila, saca un <b>jumper</b> al pin asignado (ver tabla de pines).</li>
+        <li>Conecta cada <b>cátodo</b> al riel de <b>GND</b>.</li>
+        <li>Revisa la <b>polaridad</b> de LEDs (la pata larga suele ser el ánodo).</li>
+        <li>Programa el Arduino con el <b>sketch</b> de abajo y prueba.</li>
+      </ol>
+    </section>
+
+    <!-- CÓDIGO ARDUINO -->
+    <section class="card">
+      <span class="chip">Código de Arduino</span>
+      <div class="code" style="margin-top:12px">
+        <button class="copy" onclick="copyCode(this)">Copiar</button>
+<pre><code>// Proyecto: 5 semáforos con Arduino Mega
+// Cada LED debe llevar su resistencia (220 Ω o 330 Ω) en serie.
+ 
+ 
+ 
+ // C++ code
+ //
+ void setup()
+ {
+ pinMode(13, OUTPUT);
+ pinMode(12, OUTPUT);
+ pinMode(11, OUTPUT);
+ pinMode(10, OUTPUT);
+ pinMode(9, OUTPUT);
+ pinMode(8, OUTPUT);
+ pinMode(7, OUTPUT);
+ pinMode(6, OUTPUT);
+ pinMode(5, OUTPUT);
+ pinMode(4, OUTPUT);
+ pinMode(3, OUTPUT);
+ pinMode(2, OUTPUT);
+ }
+ 
+ void loop()
+ {
+ 
+ digitalWrite(4,HIGH);
+ digitalWrite(3, LOW);
+ digitalWrite(2, LOW);
+ digitalWrite(5,HIGH);
+ digitalWrite(8,LOW);
+ digitalWrite(6, LOW);
+ digitalWrite(7, LOW);
+ digitalWrite(10, HIGH);
+ digitalWrite(9,LOW);
+ digitalWrite(13, HIGH);
+ delay(5000);
+ 
+ digitalWrite(4, LOW);
+ delay(500);
+ digitalWrite(4,HIGH);
+ delay(500);
+ digitalWrite(4,LOW);
+ delay(500);
+ digitalWrite(4,HIGH);
+ delay(500);
+ digitalWrite(4,LOW);
+ delay(500);
+ 
+ digitalWrite(3, HIGH);
+ delay(1000);
+ digitalWrite(3, LOW);
+ delay(500);
+ digitalWrite(3, HIGH);
+ delay(500);
+ digitalWrite(3, LOW);
+ delay(500);
+ digitalWrite(3, HIGH);
+ delay(500);
+ 
+ 
+ digitalWrite(5,HIGH);
+ digitalWrite(8,HIGH);
+ digitalWrite(6, LOW);
+ digitalWrite(7, LOW);
+ digitalWrite(10, LOW);
+ digitalWrite(9,LOW);
+ digitalWrite(3, LOW);
+ digitalWrite(13, HIGH);
+ digitalWrite(2, HIGH);
+ delay(5000);
+ 
+ digitalWrite(8, LOW);
+ delay(500);
+ digitalWrite(8,HIGH);
+ delay(500);
+ digitalWrite(8,LOW);
+ delay(500);
+ digitalWrite(8,HIGH);
+ delay(500);
+ 
+ digitalWrite(10,LOW);
+ digitalWrite(9,HIGH);
+ digitalWrite(8,LOW);
+ digitalWrite(13, HIGH);
+ delay(2000);
+ 
+ digitalWrite(9,LOW);
+ delay(500);
+ digitalWrite(9,HIGH);
+ delay(500);
+ digitalWrite(9,LOW);
+ delay(500);
+ digitalWrite(9,HIGH);
+ delay(500);
+ 
+ digitalWrite(5, LOW);
+ digitalWrite(6, LOW);
+ digitalWrite(7,HIGH);
+ digitalWrite(8, LOW);
+ digitalWrite(10,HIGH);
+ digitalWrite(9, LOW);
+ digitalWrite(13, HIGH);
+ delay(5000);
+ 
+ delay(500);
+ digitalWrite(7, LOW);
+ delay(500);
+ digitalWrite(7, HIGH);
+ delay(500);
+ digitalWrite(7, LOW);
+ delay(500);
+ digitalWrite(7, HIGH);
+ delay(500);
+ 
+ digitalWrite(5, LOW);
+ digitalWrite(6,HIGH);
+ digitalWrite(7, LOW);
+ delay(2000);
+ 
+ digitalWrite(6, LOW);
+ delay(500);
+ digitalWrite(6, HIGH);
+ delay(500);
+ digitalWrite(6, LOW);
+ delay(500);
+ digitalWrite(6, HIGH);
+ delay(500);
+ 
+ digitalWrite(5, HIGH);
+ digitalWrite(6, LOW);
+ digitalWrite(7,LOW);
+ digitalWrite(8, LOW);
+ digitalWrite(10,HIGH);
+ digitalWrite(9, LOW);
+ digitalWrite(11, HIGH);
+ digitalWrite(13, LOW);
+ 
+ delay(5000);
+ 
+ digitalWrite(11, LOW);
+ delay(500);
+ digitalWrite(11, HIGH);
+ delay(500);
+ digitalWrite(11, LOW);
+ delay(500);
+ digitalWrite(11, HIGH);
+ delay(500);
+ digitalWrite(11, LOW);
+ delay(500);
+ 
+ 
+ digitalWrite(12, HIGH);//semaforo 1
+ delay(1000);
+ digitalWrite(12, LOW);//semaforo 1
+ delay(500);
+ digitalWrite(12, HIGH);//semaforo 1
+ delay(500);
+ digitalWrite(12, LOW);//semaforo 1
+ delay(500);
+ digitalWrite(12, HIGH);//semaforo 1
+ delay(500);
+ digitalWrite(12, LOW);//semaforo 1
+ delay(500);
+ 
+ }
+</code></pre>
+      </div>
+    </section>
+
+    <!-- GALERÍA -->
+    <section class="card" id="final">
+      <span class="chip">Galería </span>
+      <div class="gallery" style="margin-top:12px">
+        <img src="fotos/foto1.jpeg" alt="Foto 1">
+        <img src="fotos/foto2.jpeg" alt="Foto 2">
+        <img src="fotos/foto3.jpeg" alt="Foto 3">
+        <img src="fotos/foto4.jpeg" alt="Foto 4">
+        <img src="fotos/foto5.jpeg" alt="Foto 5">
+      </div>
+    </section>
+
+    <!-- FIRMA -->
+    <footer>
+      Marlon Ordoñes - 5to baco
+    </footer>
+  </main>
+
+  <script>
+    function copyCode(btn){
+      const pre = btn.nextElementSibling; // <pre>
+      const text = pre.innerText;
+      navigator.clipboard.writeText(text).then(()=>{
+        btn.textContent='¡Copiado!';
+        setTimeout(()=>btn.textContent='Copiar',1500);
+      })
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
